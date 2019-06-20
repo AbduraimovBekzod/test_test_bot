@@ -16,12 +16,17 @@ answers = [
     ["Варинат 0.а","Варинат 0.б","Варинат 0.в"]
     ]
 
+answer = []
+question = []
+
 success = ["0", "1", "2", "0", "1", "2", "0", "1", "2", "0"]
 
 bot = telebot.TeleBot(token)
 
 @bot.message_handler(commands=["start"])
 def handle_start(message):  
+    answer = answers
+    question = questions
     bot.send_message(message.chat.id, text="Доброго времени суток!\nВведите пожалуйста своё ФИО")
 
 #@bot.message_handler(content_types=["text"])
@@ -31,24 +36,24 @@ def handle_start(message):
 @bot.message_handler(commands=["letsgo"])
 def begin_test(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
-    questions.pop(0)
+    question.pop(0)
     answers.pop(0)
 
     if(questions.__len__() > 1):
-        keyboard.add(telebot.types.InlineKeyboardButton(text=answers[0][0], callback_data="0"))
-        keyboard.add(telebot.types.InlineKeyboardButton(text=answers[0][1], callback_data="1"))
-        keyboard.add(telebot.types.InlineKeyboardButton(text=answers[0][2], callback_data="2"))
+        keyboard.add(telebot.types.InlineKeyboardButton(text=answer[0][0], callback_data="0"))
+        keyboard.add(telebot.types.InlineKeyboardButton(text=answer[0][1], callback_data="1"))
+        keyboard.add(telebot.types.InlineKeyboardButton(text=answer[0][2], callback_data="2"))
 
-        bot.send_message(message.chat.id, text=questions[0], reply_markup=keyboard)
+        bot.send_message(message.chat.id, text=question[0], reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_check_data(call):
     if call.message:
-        if(call.data == success[10-questions.__len__()]):
-            bot.edit_message_text(questions[0]+"\n\nПравильно!", call.message.chat.id, call.message.message_id)
+        if(call.data == success[10-question.__len__()]):
+            bot.edit_message_text(question[0]+"\n\nПравильно!", call.message.chat.id, call.message.message_id)
         else:
-            bot.edit_message_text(questions[0]+"\n\nНеправильно!", call.message.chat.id, call.message.message_id)
+            bot.edit_message_text(question[0]+"\n\nНеправильно!", call.message.chat.id, call.message.message_id)
 
         begin_test(call.message)
 
